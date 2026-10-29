@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Quản lý giao dịch | Địa Ốc</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+<div class="layout">
+    <aside class="sidebar">
+        <a class="brand" th:href="@{/giao-dich}"><span class="brand-icon">Đ</span><span><b>ĐỊA ỐC</b><small>PROPERTY MANAGEMENT</small></span></a>
+        <div class="side-caption">KHÔNG GIAN LÀM VIỆC</div>
+        <a class="nav-link active" th:href="@{/giao-dich}"><span class="nav-symbol">▦</span> Giao dịch nhà đất <span class="nav-arrow">›</span></a>
+        <div class="sidebar-note"><span class="shield">✓</span><div><b>Không gian an toàn</b><small>Dữ liệu quản lý tập trung</small></div></div>
+        <div class="sidebar-footer">ĐỊA ỐC · QUẢN LÝ GIAO DỊCH</div>
+    </aside>
+    <main class="main">
+        <header class="topbar"><div><div class="breadcrumb">Quản lý <span>/</span> Giao dịch nhà đất</div><div class="topbar-title">Hệ thống quản lý bất động sản</div></div><div class="avatar">QL</div></header>
+        <div class="content">
+            <div th:if="${thongBao}" class="alert" th:classappend="${loaiThongBao == 'error' ? ' alert-error' : ' alert-success'}" th:text="${thongBao}"></div>
+            <section class="page-heading"><div><div class="eyebrow">TỔNG QUAN DỮ LIỆU</div><h1>Giao dịch nhà đất</h1><p>Quản lý và theo dõi thông tin giao dịch bất động sản của bạn.</p></div><a class="btn btn-primary" th:href="@{/giao-dich/them}"><span class="plus">＋</span> Thêm mới giao dịch</a></section>
+            <section class="stats-grid">
+                <article class="stat-card"><div class="stat-icon green">▦</div><div><div class="stat-label">Giao dịch tìm thấy</div><div class="stat-value" th:text="${#lists.size(giaoDiches)}">0</div><div class="stat-sub">Theo điều kiện hiện tại</div></div></article>
+                <article class="stat-card"><div class="stat-icon blue">⌂</div><div><div class="stat-label">Loại dịch vụ</div><div class="stat-value">02</div><div class="stat-sub">Đất · Nhà và đất</div></div></article>
+                <article class="stat-card"><div class="stat-icon amber">⌕</div><div><div class="stat-label">Tìm kiếm linh hoạt</div><div class="stat-value">01</div><div class="stat-sub">Một hoặc nhiều điều kiện</div></div></article>
+            </section>
+            <section class="panel">
+                <div class="panel-heading"><div><h2>Danh sách giao dịch</h2><p>Tra cứu thông tin giao dịch trong hệ thống</p></div><span class="count-pill" th:text="${#lists.size(giaoDiches)} + ' giao dịch'">0 giao dịch</span></div>
+                <form class="search-bar" method="get" th:action="@{/giao-dich}">
+                    <label class="search-input"><span>⌕</span><input type="text" name="tenKhachHang" th:value="${tenKhachHang}" placeholder="Tìm theo tên khách hàng..." aria-label="Tên khách hàng"></label>
+                    <label class="select-wrap"><select name="loaiDichVu" aria-label="Loại dịch vụ"><option value="">Tất cả loại dịch vụ</option><option value="Đất" th:selected="${loaiDichVu == 'Đất'}">Đất</option><option value="Nhà và đất" th:selected="${loaiDichVu == 'Nhà và đất'}">Nhà và đất</option></select></label>
+                    <button class="btn btn-dark" type="submit">⌕ Tìm kiếm</button><a class="btn btn-light" th:href="@{/giao-dich}">Đặt lại</a>
+                </form>
+                <div class="table-scroll"><table><thead><tr><th>MÃ GIAO DỊCH</th><th>KHÁCH HÀNG</th><th>LOẠI DỊCH VỤ</th><th>NGÀY GIAO DỊCH</th><th>ĐƠN GIÁ / M²</th><th>DIỆN TÍCH</th><th class="align-right">THAO TÁC</th></tr></thead>
+                    <tbody><tr th:each="gd : ${giaoDiches}"><td><span class="transaction-code" th:text="${gd.maGiaoDich}">MGD-0001</span></td><td><div class="customer-cell"><span class="customer-avatar" th:text="${#strings.substring(gd.khachHang.tenKhachHang, 0, 1)}">N</span><div><b th:text="${gd.khachHang.tenKhachHang}">Tên khách hàng</b><small th:text="${gd.khachHang.soDienThoai}">Số điện thoại</small></div></div></td><td><span class="type-badge" th:classappend="${gd.loaiDichVu == 'Đất' ? ' type-land' : ' type-house'}" th:text="${gd.loaiDichVu}">Đất</span></td><td th:text="${#temporals.format(gd.ngayGiaoDich, 'dd/MM/yyyy')}">01/01/2027</td><td class="numeric" th:text="${#numbers.formatInteger(gd.donGia, 1, 'POINT')} + ' ₫'">800.000 ₫</td><td class="numeric" th:text="${#numbers.formatDecimal(gd.dienTich, 1, 'POINT', 2, 'COMMA')} + ' m²'">100,00 m²</td><td class="align-right"><a class="btn btn-outline btn-small" th:href="@{/giao-dich/{id}(id=${gd.maGiaoDich})}"><span>◉</span> Chi tiết</a></td></tr>
+                    <tr th:if="${#lists.isEmpty(giaoDiches)}"><td colspan="7"><div class="empty-state"><span class="empty-icon">⌕</span><b>Chưa tìm thấy giao dịch nào</b><p>Thử thay đổi điều kiện tìm kiếm hoặc thêm giao dịch mới.</p><a class="btn btn-primary" th:href="@{/giao-dich/them}">＋ Thêm giao dịch</a></div></td></tr>
+                    </tbody></table></div>
+                <div class="table-foot"><span>Đang hiển thị <b th:text="${#lists.size(giaoDiches)}">0</b> giao dịch</span><span>Dữ liệu được lưu trong cơ sở dữ liệu</span></div>
+            </section>
+            <footer class="footer">© 2026 Địa Ốc · Hệ thống quản lý giao dịch bất động sản</footer>
+        </div>
+    </main>
+</div>
+</body></html>
